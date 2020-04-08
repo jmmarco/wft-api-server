@@ -18,12 +18,7 @@ fs.readFile("acronyms.json", { encoding: "UTF8" }, (err, data) => {
 
 // GET Routes
 app.get("/acronyms/", (req, res) => {
-  let buffer = "";
-
-  masterList.forEach((acr) => {
-    buffer += `<p>${JSON.stringify(acr)}</p>`;
-  });
-
+  const buffer = utils.renderAcronyms(masterList)
   res.send(buffer);
 });
 
@@ -44,6 +39,19 @@ app.get("/acronym/:acronym", (req, res) => {
 
   res.status(200).send(response);
 });
+
+
+app.get("/random/:count?", (req, res) => {
+  // console.log(req.param)
+  const { count } = req.params
+
+  const result = utils.randomAcronyms(masterList, count)
+
+  const buffer = utils.renderAcronyms(result)
+
+  res.status(200)
+  .send(`Count is ${count} and result is: ${buffer}`)
+})
 
 app.get("*", (req, res) => {
   res.sendStatus(404);
