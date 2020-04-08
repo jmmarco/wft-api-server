@@ -1,28 +1,22 @@
 const express = require("express");
 const fs = require("fs");
+var utils = require('./utils')
+
 
 const PORT = 3001;
 const app = express();
-
-function mapAndTransform(arr) {
-  // console.log('fired', arr)
-  return arr.map((acr) => {
-    const entry = Object.entries(acr)[0];
-    return {
-      acronym: entry[0],
-      translation: entry[1],
-    };
-  });
-}
 
 let masterList = null;
 
 fs.readFile("acronyms.json", { encoding: "UTF8" }, (err, data) => {
   if (err) throw err;
 
-  masterList = mapAndTransform(JSON.parse(data));
+  masterList = utils.mapAndTransform(JSON.parse(data));
 });
 
+
+
+// GET Routes
 app.get("/acronyms/", (req, res) => {
   let buffer = "";
 
@@ -55,6 +49,9 @@ app.get("*", (req, res) => {
   res.sendStatus(404);
 });
 
+
+
+// Server conf
 const server = app.listen(PORT, () => {
   console.log(`Express server running on port ${server.address().port}`);
 });
