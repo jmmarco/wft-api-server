@@ -1,5 +1,6 @@
-const express = require("express");
-const fs = require("fs");
+import express from 'express'
+import fs from 'fs'
+
 var utils = require("./utils");
 
 const PORT = 3001;
