@@ -1,4 +1,6 @@
 export function mapAndTransform(arr) {
+
+  // arr.forEach(acr => console.log(Object.entries(acr)[0]))
   return arr.map((acr) => {
     const entry = Object.entries(acr)[0];
     return {

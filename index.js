@@ -1,15 +1,17 @@
 import express from 'express'
 import fs from 'fs'
 import { mapAndTransform } from './utils'
+import routes from './routes'
 
 const PORT = 3001;
 const app = express();
 
-let masterList = null;
+
 
 fs.readFile("acronyms.json", { encoding: "UTF8" }, (err, data) => {
   if (err) throw err;
-  masterList = utils.mapAndTransform(JSON.parse(data));
+  const masterList = mapAndTransform(JSON.parse(data));
+  routes(app, masterList);
 });
 
 

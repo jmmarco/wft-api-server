@@ -1,22 +1,25 @@
-const routes = (app) => {
+import { renderAcronyms, paginatedResults, randomAcronyms } from './utils'
+
+const routes = (app, masterList) => {
+
   // All acronyms
   app.get("/acronyms/", (req, res) => {
-    const buffer = utils.renderAcronyms(masterList);
+    const buffer = renderAcronyms(masterList);
     res.send(buffer);
   });
 
 
   // Complex search /acronym?from=50&limit=10&search=:search
-  app.get("/acronym?", (req, res) => {
+  app.get("/acronym?", (req, res, next) => {
     const { from, limit, search } = req.query;
+
+    console.log('next', JSON.stringify(next))
 
     if (parseInt(from) < 0 || parseInt(from) == 0) {
       return res.json({ error: "invalid " });
     }
 
-    const results = utils.paginatedResults(masterList, from, limit, search);
-
-    console.log("results is: ", results);
+    const results = paginatedResults(masterList, from, limit, search);
 
     res.status(200).json(results);
     // .send(req.query)
@@ -45,10 +48,9 @@ const routes = (app) => {
   app.get("/random/:count?", (req, res) => {
     const { count } = req.params;
 
-    const result = utils.randomAcronyms(masterList, count);
-    const buffer = utils.renderAcronyms(result);
+    const result = randomAcronyms(masterList, count);
 
-    res.status(200).send(`Count is ${count} and result is: ${buffer}`);
+    res.status(200).json(result);
   });
 
   // Non matching routes return 404 by default
