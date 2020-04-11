@@ -1,28 +1,34 @@
-import { renderAcronyms, paginatedResults, randomAcronyms } from './utils'
+import { renderAcronyms, paginatedResults, randomAcronyms } from "./utils";
+import { Acronym } from "./index";
+import { Op } from "sequelize";
 
-const routes = (app, masterList) => {
-
+const routes = (app) => {
   // All acronyms
   app.get("/acronyms/", (req, res) => {
-    const buffer = renderAcronyms(masterList);
-    res.send(buffer);
+    Acronym.findAll().then((acronyms) => {
+      res.json(acronyms);
+    });
   });
 
-
-  // Complex search /acronym?from=50&limit=10&search=:search
+  //  Search with offset and limit
   app.get("/acronym?", (req, res, next) => {
     const { from, limit, search } = req.query;
 
-    console.log('next', JSON.stringify(next))
-
-    if (parseInt(from) < 0 || parseInt(from) == 0) {
-      return res.json({ error: "invalid " });
-    }
-
-    const results = paginatedResults(masterList, from, limit, search);
-
-    res.status(200).json(results);
-    // .send(req.query)
+    Acronym.findAndCountAll({
+      where: { acronym: { [Op.like]: `%${search}` } },
+      limit: limit,
+      offset: parseInt(from),
+    }).then((results) => {
+      if (parseInt(from) >= results.count) {
+        res.json({
+          ...results,
+          next: "false",
+          tip: `Enter an offset aka 'from' value between 0 and ${results.count - 1}.`,
+        });
+      } else {
+        res.json({...results, next: "true"});
+      }
+    });
   });
 
   // Single acronym
