@@ -1,20 +1,28 @@
 import { renderAcronyms, paginatedResults, randomAcronyms } from "./utils";
-import { Acronym } from "./index";
+import { Acronym, sequelize } from "./index";
 import { Op } from "sequelize";
 
 const routes = (app) => {
 
+  console.log('INSTANCE', sequelize)
+
   // All acronyms
-  app.get("/acronyms/", (req, res) => {
+  app.get("/acronyms", (req, res) => {
     Acronym.findAll().then((acronyms) => {
       res.json(acronyms);
     });
   });
 
+  app.get('/', (req, res) => {
+    Acronym.findAll()
+      .then((acronyms) => {
+        res.json(acronyms)
+      })
+  })
+
   // Search with offset and limit
   app.get("/acronym?", (req, res, next) => {
     const { from, limit, search } = req.query;
-
     Acronym.findAndCountAll({
       where: { acronym: { [Op.like]: `%${search}` } },
       limit: limit,
@@ -46,12 +54,43 @@ const routes = (app) => {
   app.get("/random/:count?", (req, res) => {
     const { count } = req.params;
 
+    Acronym.findAll({
+      limit: count,
+      order: sequelize.random()
+    })
+    .then((acronyms) => {
+      res.json(acronyms);
+    }); 
   });
 
   // Non matching routes return 404 by default
   app.get("*", (req, res) => {
     res.sendStatus(404);
   });
+
+
+  /* POST */
+
+  app.post('/acronym', (req, res) => {
+
+    console.log(req)
+
+    // Acronym.create({
+    //   acronym: acronym,
+    //   definition: definition
+    // })
+    // .then(success => {
+    //   console.log('HEY', success)
+    //   res.send('Success')
+    // })
+    // .catch(err => {
+    //   console.log('something went kaput', err)
+    //   res.send('something went kaput', err)
+    // })
+
+    res.send('ok')
+
+  })
 };
 
 export default routes;
