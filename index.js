@@ -6,20 +6,21 @@ import Sequelize from 'sequelize'
 import { userInfo } from 'os'
 import he from 'he'
 
-
+// Define port, app and file for Express
 const PORT = 3001;
 const app = express();
+const file = 'acronyms.json'
 
-let masterList = null
-
-
-fs.readFile("acronyms.json", { encoding: "utf8" }, (err, data) => {
+// Read the the data file
+fs.readFile(file, { encoding: "utf8" }, (err, data) => {
   if (err) throw err;
-  masterList = mapAndTransform(JSON.parse(data))
+
+  // Pass the transformed array to populate the DB
+  syncAndPopulate(mapAndTransform(data))
+
+  // Setup all routes
   routes(app, Acronym);
 });
-
-
 
 
 app.get('/', (req, res) => {
@@ -27,9 +28,6 @@ app.get('/', (req, res) => {
     .then((acronyms) => {
       res.json(acronyms)
     })
-  // res
-  //   .status(200)
-  //   .json('hello')
 })
 
 
@@ -39,11 +37,12 @@ const server = app.listen(PORT, () => {
 });
 
 // Instantiate the DB
-const sequelize = new Sequelize('database', 'admin', 'admin', {
+export const sequelize = new Sequelize('database', 'admin', 'admin', {
   dialect: 'sqlite',
   storage: './acronyms.sqlite'
 })
 
+// Authenticate with DB
 sequelize
   .authenticate()
   .then(() => {
@@ -59,18 +58,15 @@ export const Acronym = sequelize.define('acronym', {
   definition: { type: Sequelize.STRING }
 });
 
-
-Acronym.sync({ force: true }).then(() => {
-  // Now the `users` table in the database corresponds to the model definition
-  masterList.forEach(item => {
-    return Acronym.create({
-      acronym: item.acronym,
-      definition: he.decode(item.definition)
-    });
-  })
-});
-
-
-function setup() {
-
+// Sync the model with the database
+function syncAndPopulate(arr) {
+  Acronym.sync({ force: true }).then(() => {
+    arr.forEach(item => {
+      return Acronym.create({
+        acronym: item.acronym,
+        definition: he.decode(item.definition)
+      });
+    })
+  });
 }
+
