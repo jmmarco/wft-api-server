@@ -1,4 +1,4 @@
-import { renderAcronyms, paginatedResults, randomAcronyms } from "./utils";
+import { handleSequelizeError } from "./utils";
 import { Acronym, sequelize } from "./index";
 import { Op } from "sequelize";
 
@@ -34,7 +34,7 @@ const routes = (app) => {
     } else {
       res.status(403).send({
         error:
-          "Please provide an Authorization header to identify yourself: { Authorization: 'WHATEVER' } ",
+          "Please provide an Authorization header to identify yourself. Like this: { Authorization: 'WHATEVER' } ",
       });
     }
   });
@@ -95,33 +95,46 @@ const routes = (app) => {
     res.sendStatus(404);
   });
 
-  /* POST */
+  // POST --> 
   app.post("/acronym", (req, res) => {
-
     const { acronym, definition } = req.body;
 
     Acronym.create({
       acronym: acronym,
       definition: definition,
     })
-    .then((success) => {
-      res.status(200).send(success);
-    })
-    .catch((err) => {
-      const [ValidationErrorItem] = err.errors;
-      const { message } = ValidationErrorItem;
-      res.status(403).send(`Something went wrong: ${message}`);
-    });
-
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((err) => {
+        const [ValidationErrorItem] = err.errors;
+        const { message } = ValidationErrorItem;
+        res.status(403).send(`Something went wrong: ${message}`);
+      });
   });
 
-  // --> /acronym/:acronym
+  // PUT --> /acronym/:acronym
   app.put("/acronym/:acronym", (req, res, next) => {
-    if (!req.headers.authorization) {
-      return res.status(403).json({ error: "No authorization headers sent!" });
+    const { acronym, definition } = req.body;
+
+    if (!acronym) {
+      res
+        .status(403)
+        .send("You must supply a valid (existing) acronym to update");
+      next();
     }
 
-    next();
+    Acronym.update(
+      { definition: definition || '' },
+      { where: { acronym: { [Op.eq]: acronym.toUpperCase() || '' } } }
+    )
+      .then((affectedRows) => {
+        res.status(200).send(`Successfully updated ${affectedRows}.`);
+      })
+      .catch((err) => {
+        const errorMessage = handleSequelizeError(err);
+        res.status(403).send(errorMessage);
+      });
   });
 };
 
