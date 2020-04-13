@@ -125,14 +125,34 @@ const routes = (app) => {
       });
   });
 
+  // DELETE --> /acronym/:acronym
+  app.delete('/acronym/:acronym', (req, res) => {
+    const { acronym } = req.body;
 
-  app.delete()
+    if (!acronym) {
+      res
+        .status(403)
+        .send("You must supply a valid (existing) acronym to delete");
+      next();
+    }
 
+    Acronym.destroy(
+      { where: { acronym: { [Op.eq]: acronym.toUpperCase() || '' } } }
+    )
+      .then((affectedRows) => {
+        res.status(200).send(`Successfully deleted ${affectedRows}.`);
+      })
+      .catch((err) => {
+        const errorMessage = handleSequelizeError(err);
+        res.status(403).send(errorMessage);
+      });
 
-    // Non matching routes return 404 by default
-    app.get("*", (req, res) => {
-      res.sendStatus(404);
-    });
+  })
+
+  // ALL other routes return 404 by default
+  app.get("*", (req, res) => {
+    res.sendStatus(404);
+  });
 };
 
 export default routes;
