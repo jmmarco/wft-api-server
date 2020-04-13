@@ -30,7 +30,7 @@ npm install
  - Juan Marco
 
 ## License
-See [License.md](License.md)
+See [License.md](LICENSE.md)
 
 ## Bugs
 PR's are welcomed! Open a PR and we'll take it from there.
