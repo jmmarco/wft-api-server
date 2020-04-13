@@ -1,7 +1,7 @@
 import express from "express";
 import fs from "fs";
 import { mapAndTransform } from "./utils";
-import { syncAndPopulate}  from './dbConnector'
+import { syncAndPopulate }  from './dbConnector'
 import routes from "./routes";
 
 

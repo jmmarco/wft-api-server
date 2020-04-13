@@ -24,7 +24,7 @@ const routes = (app) => {
   });
 
   // Check if authorization headers are present
-    app.use((req, res, next) => {
+  app.use((req, res, next) => {
     // Our token is the key "Authorization" and any value found in the Headers
     const token = req.get("Authorization");
 
@@ -61,7 +61,7 @@ const routes = (app) => {
     });
   });
 
-  // GET --> /acronym/:acrony
+  // GET --> /acronym/:acronym
   app.get("/acronym/:acronym", (req, res) => {
     const { acronym } = req.params;
     Acronym.findOne({
@@ -71,7 +71,7 @@ const routes = (app) => {
     });
   });
 
-  // GET --> /random/:count? 
+  // GET --> /random/:count?
   app.get("/random/:count?", (req, res) => {
     const { count } = req.params;
 
@@ -113,8 +113,8 @@ const routes = (app) => {
     }
 
     Acronym.update(
-      { definition: definition || '' },
-      { where: { acronym: { [Op.eq]: acronym.toUpperCase() || '' } } }
+      { definition: definition || "" },
+      { where: { acronym: { [Op.eq]: acronym.toUpperCase() || "" } } }
     )
       .then((affectedRows) => {
         res.status(200).send(`Successfully updated ${affectedRows}.`);
@@ -126,7 +126,7 @@ const routes = (app) => {
   });
 
   // DELETE --> /acronym/:acronym
-  app.delete('/acronym/:acronym', (req, res) => {
+  app.delete("/acronym/:acronym", (req, res) => {
     const { acronym } = req.body;
 
     if (!acronym) {
@@ -136,9 +136,9 @@ const routes = (app) => {
       next();
     }
 
-    Acronym.destroy(
-      { where: { acronym: { [Op.eq]: acronym.toUpperCase() || '' } } }
-    )
+    Acronym.destroy({
+      where: { acronym: { [Op.eq]: acronym.toUpperCase() || "" } },
+    })
       .then((affectedRows) => {
         res.status(200).send(`Successfully deleted ${affectedRows}.`);
       })
@@ -146,8 +146,7 @@ const routes = (app) => {
         const errorMessage = handleSequelizeError(err);
         res.status(403).send(errorMessage);
       });
-
-  })
+  });
 
   // ALL other routes return 404 by default
   app.get("*", (req, res) => {

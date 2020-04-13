@@ -9,9 +9,9 @@ export function mapAndTransform(json) {
   });
 }
 
+// Desconstruct's Sequelize error object and return something useful
 export function handleSequelizeError(err) {
   const [ValidationErrorItem] = err.errors;
   const { message } = ValidationErrorItem;
-
-  return message
+  return message;
 }

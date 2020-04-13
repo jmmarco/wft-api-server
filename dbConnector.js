@@ -24,7 +24,7 @@ export const Acronym = sequelize.define("acronym", {
 });
 
 // Sync the model with the database
-export function syncAndPopulate(arr) {
+export default function syncAndPopulate(arr) {
   Acronym.sync({ force: true }).then(() => {
     arr.forEach((item) => {
       return Acronym.create({
