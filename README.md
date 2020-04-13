@@ -39,6 +39,6 @@ fetch(url, { headers: { 'Authorization': 'whatever-you-want' }})
 See [LICENSE.md](LICENSE.md)
 
 ## Bugs
-PR's are welcomed! Open a PR and we'll take it from there.
+PR's welcome! Open a PR and we'll take it from there.
 
 
