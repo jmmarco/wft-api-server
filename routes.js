@@ -3,8 +3,7 @@ import { Acronym, sequelize } from "./index";
 import { Op } from "sequelize";
 
 const routes = (app) => {
-
-  console.log('INSTANCE', sequelize)
+  console.log("INSTANCE", sequelize);
 
   // All acronyms
   app.get("/acronyms", (req, res) => {
@@ -13,12 +12,11 @@ const routes = (app) => {
     });
   });
 
-  app.get('/', (req, res) => {
-    Acronym.findAll()
-      .then((acronyms) => {
-        res.json(acronyms)
-      })
-  })
+  app.get("/", (req, res) => {
+    Acronym.findAll().then((acronyms) => {
+      res.json(acronyms);
+    });
+  });
 
   // Search with offset and limit
   app.get("/acronym?", (req, res, next) => {
@@ -32,10 +30,12 @@ const routes = (app) => {
         res.json({
           ...results,
           next: "false",
-          tip: `Enter an offset aka 'from' value between 0 and ${results.count - 1}.`,
+          tip: `Enter an offset aka 'from' value between 0 and ${
+            results.count - 1
+          }.`,
         });
       } else {
-        res.json({...results, next: "true"});
+        res.json({ ...results, next: "true" });
       }
     });
   });
@@ -43,11 +43,11 @@ const routes = (app) => {
   // Single acronym
   app.get("/acronym/:acronym", (req, res) => {
     const { acronym } = req.params;
-      Acronym.findOne({
-        where: { acronym: { [Op.like]: `%${acronym}` } },
-      }).then(results => {
-        res.json(results)
-      })
+    Acronym.findOne({
+      where: { acronym: { [Op.like]: `%${acronym}` } },
+    }).then((results) => {
+      res.json(results);
+    });
   });
 
   // Random amount of acronyms
@@ -56,11 +56,10 @@ const routes = (app) => {
 
     Acronym.findAll({
       limit: count,
-      order: sequelize.random()
-    })
-    .then((acronyms) => {
+      order: sequelize.random(),
+    }).then((acronyms) => {
       res.json(acronyms);
-    }); 
+    });
   });
 
   // Non matching routes return 404 by default
@@ -68,29 +67,29 @@ const routes = (app) => {
     res.sendStatus(404);
   });
 
-
   /* POST */
 
-  app.post('/acronym', (req, res) => {
+  app.post("/acronym", bodyParser.json(), (req, res) => {
+ 
+    console.log("BODY", req.body);
 
-    console.log(req)
+    const { acronym, definition } = req.body
 
-    // Acronym.create({
-    //   acronym: acronym,
-    //   definition: definition
-    // })
-    // .then(success => {
-    //   console.log('HEY', success)
-    //   res.send('Success')
-    // })
-    // .catch(err => {
-    //   console.log('something went kaput', err)
-    //   res.send('something went kaput', err)
-    // })
+    Acronym.create({
+      acronym: acronym,
+      definition: definition
+    })
+    .then(success => {
+      console.log('HEY', success)
+      // res.body('Success', success)
+      res.status(200).send(success) 
+    })
+    .catch(err => {
+      console.log('something went kaput', err)
+      res.send('something went kaput', err)
+    })
 
-    res.send('ok')
-
-  })
+  });
 };
 
 export default routes;
