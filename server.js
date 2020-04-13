@@ -6,7 +6,7 @@ import Sequelize from "sequelize";
 import he from "he";
 
 // Define port, app and file for Express
-const PORT = 3001;
+const PORT = 4000;
 const app = express();
 const file = "acronyms.json";
 
