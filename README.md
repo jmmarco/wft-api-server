@@ -13,12 +13,12 @@ npm install
 ```
 
 ## Available enpoints
-- GET /acronym?from=50&limit=10&search=:search
-- GET /acronym/:acronym
-- GET /random/:count?
-- POST /acronym
-- PUT /acronym/:acronym
-- DELETE /acronym/:acronym:
+- `**GET** /acronym?from=50&limit=10&search=:search`
+- `**GET** /acronym/:acronym`
+- `**GET** /random/:count?`
+- `**POST** /acronym`
+- `**PUT** /acronym/:acronym`
+- `**DELETE** /acronym/:acronym:`
 
 ## Built with
 - [Express](https://expressjs.com/)
@@ -30,7 +30,7 @@ npm install
  - Juan Marco
 
 ## License
-See [License.md](LICENSE.md)
+See [LICENSE.md](LICENSE.md)
 
 ## Bugs
 PR's are welcomed! Open a PR and we'll take it from there.
