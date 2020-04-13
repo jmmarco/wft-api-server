@@ -1,5 +1,5 @@
 import { handleSequelizeError } from "./utils";
-import { Acronym, sequelize } from "./index";
+import { Acronym, sequelize } from "./server";
 import { Op } from "sequelize";
 
 const routes = (app) => {
