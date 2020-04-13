@@ -8,3 +8,10 @@ export function mapAndTransform(json) {
     };
   });
 }
+
+export function handleSequelizeError(err) {
+  const [ValidationErrorItem] = err.errors;
+  const { message } = ValidationErrorItem;
+
+  return message
+}
