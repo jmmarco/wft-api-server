@@ -20,6 +20,12 @@ npm install
 - **`PUT /acronym/:acronym`**
 - **`DELETE /acronym/:acronym:`**
 
+**Important**: Each request needs to have an Authorization header to identify yourself. For example:
+- Using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API):
+```
+fetch(url, { headers: { 'Authorization': 'whatever-you-want' }})
+```
+
 ## Built with
 - [Express](https://expressjs.com/)
 - [Sequelize](https://sequelize.org/)
