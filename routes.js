@@ -3,16 +3,44 @@ import { Acronym, sequelize } from "./index";
 import { Op } from "sequelize";
 
 const routes = (app) => {
-  console.log("INSTANCE", sequelize);
+  app.get("/", (req, res) => {
+    const help = `
+    <pre>
+      Welcome to the World Texting Foundation, also known as WTF.
+
+      Use an Authorization header to work with your own data:
+      i.e: fetch(url, { headers: { 'Authorization': 'whatever-you-want' }})
+      
+      The following endpoints are available:
+      - GET /acronym?from=50&limit=10&search=:search
+      - GET /acronym/:acronym
+      - GET /random/:count?
+      - POST /acronym
+      - PUT /acronym/:acronym
+      - DELETE /acronym/:acronym
+    </pre>
+    `;
+    res.status(200).send(help);
+  });
+
+  // Check if user is authorized
+  app.use((req, res, next) => {
+    // Our token is the key "Authorization" and any value found in the Headers
+    const token = req.get("Authorization");
+
+    if (token) {
+      req.token = token;
+      next();
+    } else {
+      res.status(403).send({
+        error:
+          "Please provide an Authorization header to identify yourself: { Authorization: 'WHATEVER' } ",
+      });
+    }
+  });
 
   // All acronyms
   app.get("/acronyms", (req, res) => {
-    Acronym.findAll().then((acronyms) => {
-      res.json(acronyms);
-    });
-  });
-
-  app.get("/", (req, res) => {
     Acronym.findAll().then((acronyms) => {
       res.json(acronyms);
     });
@@ -68,27 +96,32 @@ const routes = (app) => {
   });
 
   /* POST */
+  app.post("/acronym", (req, res) => {
 
-  app.post("/acronym", bodyParser.json(), (req, res) => {
- 
-    console.log("BODY", req.body);
-
-    const { acronym, definition } = req.body
+    const { acronym, definition } = req.body;
 
     Acronym.create({
       acronym: acronym,
-      definition: definition
+      definition: definition,
     })
-    .then(success => {
-      console.log('HEY', success)
-      // res.body('Success', success)
-      res.status(200).send(success) 
+    .then((success) => {
+      res.status(200).send(success);
     })
-    .catch(err => {
-      console.log('something went kaput', err)
-      res.send('something went kaput', err)
-    })
+    .catch((err) => {
+      const [ValidationErrorItem] = err.errors;
+      const { message } = ValidationErrorItem;
+      res.status(403).send(`Something went wrong: ${message}`);
+    });
 
+  });
+
+  // --> /acronym/:acronym
+  app.put("/acronym/:acronym", (req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(403).json({ error: "No authorization headers sent!" });
+    }
+
+    next();
   });
 };
 
