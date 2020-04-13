@@ -13,12 +13,12 @@ npm install
 ```
 
 ## Available enpoints
-- `**GET** /acronym?from=50&limit=10&search=:search`
-- `**GET** /acronym/:acronym`
-- `**GET** /random/:count?`
-- `**POST** /acronym`
-- `**PUT** /acronym/:acronym`
-- `**DELETE** /acronym/:acronym:`
+- `**GET /acronym?from=50&limit=10&search=:search**`
+- `**GET /acronym/:acronym**`
+- `**GET /random/:count?**`
+- `**POST /acronym**`
+- `**PUT /acronym/:acronym**`
+- `**DELETE /acronym/:acronym:**`
 
 ## Built with
 - [Express](https://expressjs.com/)
