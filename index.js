@@ -1,35 +1,27 @@
-import express from 'express'
-import fs from 'fs'
-import { mapAndTransform } from './utils'
-import routes from './routes'
-import Sequelize from 'sequelize'
-import { userInfo } from 'os'
-import he from 'he'
+import express from "express";
+import fs from "fs";
+import { mapAndTransform } from "./utils";
+import routes from "./routes";
+import Sequelize from "sequelize";
+import he from "he";
 
 // Define port, app and file for Express
 const PORT = 3001;
 const app = express();
-const file = 'acronyms.json'
+const file = "acronyms.json";
+
+app.use(express.urlencoded({ extended: true })).use(express.json());
 
 // Read the the data file
 fs.readFile(file, { encoding: "utf8" }, (err, data) => {
   if (err) throw err;
 
   // Pass the transformed array to populate the DB
-  syncAndPopulate(mapAndTransform(data))
+  syncAndPopulate(mapAndTransform(data));
 
   // Setup all routes
   routes(app, Acronym);
 });
-
-
-app.get('/', (req, res) => {
-  Acronym.findAll()
-    .then((acronyms) => {
-      res.json(acronyms)
-    })
-})
-
 
 // Server conf
 const server = app.listen(PORT, () => {
@@ -37,36 +29,35 @@ const server = app.listen(PORT, () => {
 });
 
 // Instantiate the DB
-export const sequelize = new Sequelize('database', 'admin', 'admin', {
-  dialect: 'sqlite',
-  storage: './acronyms.sqlite'
-})
+export const sequelize = new Sequelize("database", "admin", "admin", {
+  dialect: "sqlite",
+  storage: "./acronyms.sqlite",
+});
 
 // Authenticate with DB
 sequelize
   .authenticate()
   .then(() => {
-    console.log('Connection has been established successfully.');
+    console.log("Connection has been established successfully.");
   })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
   });
 
 // Define the Model
-export const Acronym = sequelize.define('acronym', {
+export const Acronym = sequelize.define("acronym", {
   acronym: { type: Sequelize.STRING },
-  definition: { type: Sequelize.STRING }
+  definition: { type: Sequelize.STRING },
 });
 
 // Sync the model with the database
 function syncAndPopulate(arr) {
   Acronym.sync({ force: true }).then(() => {
-    arr.forEach(item => {
+    arr.forEach((item) => {
       return Acronym.create({
         acronym: item.acronym,
-        definition: he.decode(item.definition)
+        definition: he.decode(item.definition),
       });
-    })
+    });
   });
 }
-
