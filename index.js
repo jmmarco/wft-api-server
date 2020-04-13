@@ -46,8 +46,8 @@ sequelize
 
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
-  acronym: { type: Sequelize.STRING },
-  definition: { type: Sequelize.STRING },
+  acronym: { type: Sequelize.STRING, allowNull: false },
+  definition: { type: Sequelize.STRING, allowNull: false },
 });
 
 // Sync the model with the database
