@@ -23,8 +23,8 @@ const routes = (app) => {
     res.status(200).send(help);
   });
 
-  // Check if user is authorized
-  app.use((req, res, next) => {
+  // Check if authorization headers are present
+    app.use((req, res, next) => {
     // Our token is the key "Authorization" and any value found in the Headers
     const token = req.get("Authorization");
 
@@ -39,14 +39,7 @@ const routes = (app) => {
     }
   });
 
-  // All acronyms
-  app.get("/acronyms", (req, res) => {
-    Acronym.findAll().then((acronyms) => {
-      res.json(acronyms);
-    });
-  });
-
-  // Search with offset and limit
+  // GET --> /acronym?from=50&limit=10&search=:search
   app.get("/acronym?", (req, res, next) => {
     const { from, limit, search } = req.query;
     Acronym.findAndCountAll({
@@ -68,7 +61,7 @@ const routes = (app) => {
     });
   });
 
-  // Single acronym
+  // GET --> /acronym/:acrony
   app.get("/acronym/:acronym", (req, res) => {
     const { acronym } = req.params;
     Acronym.findOne({
@@ -78,7 +71,7 @@ const routes = (app) => {
     });
   });
 
-  // Random amount of acronyms
+  // GET --> /random/:count? 
   app.get("/random/:count?", (req, res) => {
     const { count } = req.params;
 
@@ -90,12 +83,7 @@ const routes = (app) => {
     });
   });
 
-  // Non matching routes return 404 by default
-  app.get("*", (req, res) => {
-    res.sendStatus(404);
-  });
-
-  // POST --> 
+  // POST --> /acronym
   app.post("/acronym", (req, res) => {
     const { acronym, definition } = req.body;
 
@@ -136,6 +124,15 @@ const routes = (app) => {
         res.status(403).send(errorMessage);
       });
   });
+
+
+  app.delete()
+
+
+    // Non matching routes return 404 by default
+    app.get("*", (req, res) => {
+      res.sendStatus(404);
+    });
 };
 
 export default routes;
