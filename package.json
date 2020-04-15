@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./server.js --exec babel-node -e js",
+    "start": "node -r babel-register scripts.js",
     "start-dev": "nodemon ./server.js --exec babel-node -e js"
   },
   "keywords": [],
