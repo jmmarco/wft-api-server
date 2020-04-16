@@ -1,8 +1,9 @@
 import { handleSequelizeError } from "./utils";
-import { Acronym, sequelize } from "./server";
+import { Acronym, sequelize } from "./dbConnector";
 import { Op } from "sequelize";
 
 const routes = (app) => {
+
   app.get("/", (req, res) => {
     const help = `
     <pre>
@@ -64,6 +65,7 @@ const routes = (app) => {
   // GET --> /acronym/:acronym
   app.get("/acronym/:acronym", (req, res) => {
     const { acronym } = req.params;
+
     Acronym.findOne({
       where: { acronym: { [Op.like]: `%${acronym}` } },
     }).then((results) => {

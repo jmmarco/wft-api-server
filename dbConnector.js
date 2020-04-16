@@ -23,6 +23,8 @@ export const Acronym = sequelize.define("acronym", {
   definition: { type: Sequelize.STRING, allowNull: false },
 });
 
+
+
 // Sync the model with the database
 export function syncAndPopulate(arr) {
   Acronym.sync({ force: true }).then(() => {
