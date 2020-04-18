@@ -2,10 +2,12 @@ import Sequelize from "sequelize";
 import he from "he";
 
 // Instantiate the DB
-export const sequelize = new Sequelize("database", "admin", "admin", {
-  dialect: "sqlite",
-  storage: "./acronyms.sqlite",
+export const sequelize = new Sequelize("acronyms", "postgres", "quilmes01", {
+  dialect: "postgres",
+  host: 'localhost'
 });
+
+
 
 // Authenticate with DB
 sequelize
