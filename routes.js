@@ -67,9 +67,11 @@ const routes = (app) => {
     const { acronym } = req.params;
 
     Acronym.findOne({
-      where: { acronym: { [Op.like]: `%${acronym}` } },
+      where: { acronym: { [Op.like]: `%${acronym.toUpperCase()}` } },
     }).then((results) => {
       res.json(results);
+    }).catch((err) => {
+      res.send(`No results found for ${acronym}`);
     });
   });
 
