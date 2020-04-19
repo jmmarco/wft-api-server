@@ -1,9 +1,8 @@
-import { handleSequelizeError } from "./utils";
+import { handleSequelizeError, capitalizeFirstLetter } from "./utils";
 import { Acronym, sequelize } from "./dbConnector";
 import { Op } from "sequelize";
 
 const routes = (app) => {
-
   app.get("/", (req, res) => {
     const help = `
     <pre>
@@ -43,8 +42,26 @@ const routes = (app) => {
   // GET --> /acronym?from=50&limit=10&search=:search
   app.get("/acronym?", (req, res, next) => {
     const { from, limit, search } = req.query;
+
+    if (!search) {
+      res.send({})
+    }
+
     Acronym.findAndCountAll({
-      where: { acronym: { [Op.like]: `%${search}` } },
+      where: {
+        [Op.or]: [
+          {
+            acronym: {
+              [Op.like]: `%${capitalizeFirstLetter(search)}%`
+            }
+          },
+          {
+            acronym: {
+              [Op.like]: `%${search.toUpperCase()}%`
+            }
+          }
+        ]
+      },
       limit: limit,
       offset: parseInt(from),
     }).then((results) => {
@@ -66,13 +83,35 @@ const routes = (app) => {
   app.get("/acronym/:acronym", (req, res) => {
     const { acronym } = req.params;
 
+    console.log('ACRONYM', acronym)
+    
+    if (!acronym) {
+      res.send({})
+    }
+
     Acronym.findOne({
-      where: { acronym: { [Op.like]: `%${acronym.toUpperCase()}` } },
-    }).then((results) => {
-      res.json(results);
-    }).catch((err) => {
-      res.send(`No results found for ${acronym}`);
-    });
+      where: {
+        [Op.or]: [
+          {
+            acronym: {
+              [Op.like]: `%${capitalizeFirstLetter(acronym)}%`
+            }
+          },
+          {
+            acronym: {
+              [Op.like]: `%${acronym.toUpperCase()}%`
+            }
+          }
+        ]
+      },
+    })
+      .then((results) => {
+        res.json(results);
+      })
+      .catch((err) => {
+        const errorMessage = handleSequelizeError(err);
+        res.status(403).send(errorMessage);
+      });
   });
 
   // GET --> /random/:count?
@@ -92,16 +131,15 @@ const routes = (app) => {
     const { acronym, definition } = req.body;
 
     Acronym.create({
-      acronym: acronym,
+      acronym: acronym.toUpperCase(),
       definition: definition,
     })
       .then((result) => {
         res.status(200).send(result);
       })
       .catch((err) => {
-        const [ValidationErrorItem] = err.errors;
-        const { message } = ValidationErrorItem;
-        res.status(403).send(`Something went wrong: ${message}`);
+        const errorMessage = handleSequelizeError(err);
+        res.status(403).send(errorMessage);
       });
   });
 
