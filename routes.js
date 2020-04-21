@@ -1,4 +1,3 @@
-import { handleSequelizeError, capitalizeFirstLetter } from "./utils";
 import {
   findMultiple,
   findSingle,
@@ -9,7 +8,6 @@ import {
   welcome,
 } from "./acronymController";
 import { Acronym, sequelize } from "./dbConnector";
-import { Op } from "sequelize";
 
 const routes = (app) => {
   // Check if authorization headers are present
