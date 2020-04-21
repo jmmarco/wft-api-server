@@ -70,8 +70,6 @@ export function findMultiple(req, res) {
 export function findSingle(req, res) {
   const { acronym } = req.params;
 
-  console.log("ACRONYM", acronym);
-
   if (!acronym) {
     res.send({});
   }
@@ -114,10 +112,9 @@ export function findRandom(req, res) {
     order: sequelize.random(),
   }).then((acronyms) => {
     res.json(acronyms);
-  });
+  })
 }
 
-// POST --> /acronym
 export function addSingle(req, res) {
   const { acronym, definition } = req.body;
 
