@@ -43,8 +43,12 @@ const routes = (app) => {
   app.get("/acronym?", (req, res, next) => {
     const { from, limit, search } = req.query;
 
-    if (!search) {
-      res.send({})
+    if (!search || !limit || !from) {
+      res.send({
+        error:
+          "You must provide: 'from', 'limit' and 'search' in your request.",
+        example: "/acronym?from=1&limit=10&search=YO",
+      });
     }
 
     Acronym.findAndCountAll({
@@ -52,30 +56,32 @@ const routes = (app) => {
         [Op.or]: [
           {
             acronym: {
-              [Op.like]: `%${capitalizeFirstLetter(search)}%`
-            }
+              [Op.like]: `%${capitalizeFirstLetter(search)}%`,
+            },
           },
           {
             acronym: {
-              [Op.like]: `%${search.toUpperCase()}%`
-            }
-          }
-        ]
+              [Op.like]: `%${search.toUpperCase()}%`,
+            },
+          },
+        ],
       },
-      limit: limit,
+      limit: parseInt(limit),
       offset: parseInt(from),
     }).then((results) => {
-      if (parseInt(from) >= results.count) {
-        res.json({
-          ...results,
-          next: "false",
-          tip: `Enter an offset aka 'from' value between 0 and ${
-            results.count - 1
-          }.`,
-        });
-      } else {
-        res.json({ ...results, next: "true" });
-      }
+      const pageCount = Math.ceil(results.count / parseInt(limit));
+      const next = results.rows.length !== 1 ? "True" : "False";
+
+      // Set response headers 'next' to indicate if there are more results
+      res.set({
+        next: next,
+      });
+
+      // Also set it in the response object
+      res.json({
+        ...results,
+        next,
+      });
     });
   });
 
@@ -83,10 +89,10 @@ const routes = (app) => {
   app.get("/acronym/:acronym", (req, res) => {
     const { acronym } = req.params;
 
-    console.log('ACRONYM', acronym)
-    
+    console.log("ACRONYM", acronym);
+
     if (!acronym) {
-      res.send({})
+      res.send({});
     }
 
     Acronym.findOne({
@@ -94,15 +100,20 @@ const routes = (app) => {
         [Op.or]: [
           {
             acronym: {
-              [Op.like]: `%${capitalizeFirstLetter(acronym)}%`
-            }
+              [Op.eq]: acronym.toUpperCase(),
+            },
           },
           {
             acronym: {
-              [Op.like]: `%${acronym.toUpperCase()}%`
-            }
-          }
-        ]
+              [Op.like]: `${capitalizeFirstLetter(acronym)}%`,
+            },
+          },
+          {
+            acronym: {
+              [Op.like]: `${acronym.toUpperCase()}%`,
+            },
+          },
+        ],
       },
     })
       .then((results) => {
@@ -130,8 +141,14 @@ const routes = (app) => {
   app.post("/acronym", (req, res) => {
     const { acronym, definition } = req.body;
 
+    /* 
+      https://en.wikipedia.org/wiki/Acronym#Case 
+      Apparently there are many conventions regarding the casing, 
+      so we're not enforcing or transforming anything here.
+    */
+
     Acronym.create({
-      acronym: acronym.toUpperCase(),
+      acronym: acronym,
       definition: definition,
     })
       .then((result) => {
@@ -146,17 +163,25 @@ const routes = (app) => {
   // PUT --> /acronym/:acronym
   app.put("/acronym/:acronym", (req, res, next) => {
     const { acronym, definition } = req.body;
-
     if (!acronym) {
       res
         .status(403)
         .send("You must supply a valid (existing) acronym to update");
       next();
+    } else if (!definition || definition.length < 1) {
+      res.status(403).send("Definition must be at least two charcters long");
+      next();
     }
 
     Acronym.update(
-      { definition: definition || "" },
-      { where: { acronym: { [Op.eq]: acronym.toUpperCase() || "" } } }
+      { definition: capitalizeFirstLetter(definition) },
+      {
+        where: {
+          acronym: {
+            [Op.eq]: acronym.toUpperCase() || capitalizeFirstLetter(acronym),
+          },
+        },
+      }
     )
       .then((affectedRows) => {
         res.status(200).send(`Successfully updated ${affectedRows}.`);
