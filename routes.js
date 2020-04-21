@@ -46,8 +46,8 @@ const routes = (app) => {
   // PUT --> /acronym/:acronym
   app.put("/acronym/:acronym", (req, res, next) => next(), modifySingle);
 
-  // // DELETE --> /acronym/:acronym
-  // app.delete("/acronym/:acronym", (req, res, next) => next(), deleteSingle);
+  // DELETE --> /acronym/:acronym
+  app.delete("/acronym/:acronym", (req, res, next) => next(), deleteSingle);
 
   // ALL other routes return 404 by default
   app.get("*", (req, res) => {
