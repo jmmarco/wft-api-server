@@ -3,6 +3,7 @@ import {
   findMultiple,
   findSingle,
   findRandom,
+  addSingle,
   modifySingle,
   deleteSingle,
   welcome,
@@ -39,11 +40,14 @@ const routes = (app) => {
   // GET --> /random/:count?
   app.get("/random/:count?", (req, res, next) => next(), findRandom);
 
+// POST --> /acronym
+  app.post("/acronym", (req, res, next) => next(), addSingle)
+
   // PUT --> /acronym/:acronym
   app.put("/acronym/:acronym", (req, res, next) => next(), modifySingle);
 
-  // DELETE --> /acronym/:acronym
-  app.delete("/acronym/:acronym", (req, res, next) => next(), deleteSingle);
+  // // DELETE --> /acronym/:acronym
+  // app.delete("/acronym/:acronym", (req, res, next) => next(), deleteSingle);
 
   // ALL other routes return 404 by default
   app.get("*", (req, res) => {
