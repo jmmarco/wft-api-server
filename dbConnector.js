@@ -1,10 +1,7 @@
 import Sequelize from "sequelize";
 import he from "he";
 
-export const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'acronyms.sqlite'
-});
+const sequelize = new Sequelize(process.env.DATABASE_URL)
 
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
