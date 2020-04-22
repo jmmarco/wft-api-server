@@ -9,9 +9,14 @@ const sequelize = new Sequelize({
   port: 5432,
   dialect: "postgres",
   dialectOptions: {
-    ssl: true,
-    rejectUnauthorized: false
+    ssl: {
+      require: true,
+      // Ref.: https://github.com/brianc/node-postgres/issues/2009
+      rejectUnauthorized: false,
+    },
+    keepAlive: true,
   },
+  ssl: true,
 });
 
 // Define the Model
