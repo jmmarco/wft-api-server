@@ -1,7 +1,10 @@
 import Sequelize from "sequelize";
 import he from "he";
 
-const sequelize = new Sequelize(process.env.DATABASE_URL)
+export const sequelize = new Sequelize("acronyms", process.env.DB_USER, process.env.DB_PASS, {
+  dialect: "postgres",
+  host: process.env.DATABASE_URL
+});
 
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
