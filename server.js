@@ -6,7 +6,7 @@ import routes from "./routes";
 
 
 // Define port, app and file for Express
-const PORT = process.env.PORT || 8080;
+let PORT = process.env.PORT || 8080;
 const app = express();
 const file = "acronyms.json";
 
