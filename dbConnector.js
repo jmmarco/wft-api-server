@@ -1,22 +1,18 @@
 import Sequelize from "sequelize";
 import he from "he";
 
-export const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize({
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: 5432,
   dialect: "postgres",
-  protocol: "postgres",
   dialectOptions: {
     ssl: true,
     rejectUnauthorized: false
-  }
+  },
 });
-
-// sequelize = new Sequelize(process.env.DATABASE_URL, {
-//   dialect: 'postgres',
-//   protocol: 'postgres',
-//   dialectOptions: {
-//       ssl: true
-//   }
-// });
 
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
