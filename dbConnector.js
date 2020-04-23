@@ -17,8 +17,7 @@ export const sequelize = new Sequelize({
       keepAlive: true,
     },
     ssl: true,
-  });
-}
+});
 
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
