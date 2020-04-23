@@ -14,7 +14,10 @@ app.use(express.urlencoded({ extended: true })).use(express.json());
 
 // Read the the data file
 fs.readFile(file, { encoding: "utf8" }, (err, data) => {
-  if (err) throw err;
+
+  if (err) {
+    next(err) // Pass errors to Express
+  }
 
   // Pass the transformed array to populate the DB
   syncAndPopulate(mapAndTransform(data));
