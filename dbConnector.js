@@ -1,11 +1,7 @@
 import Sequelize from "sequelize";
 import he from "he";
 
-
-export let sequelize;
-
-if (process.env.NODE_ENV === 'production') {
-  sequelize = new Sequelize({
+export const sequelize = new Sequelize({
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -21,11 +17,6 @@ if (process.env.NODE_ENV === 'production') {
       keepAlive: true,
     },
     ssl: true,
-  });
-} else {
-  sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'acronyms.sqlite'
   });
 }
 
