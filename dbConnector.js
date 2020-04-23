@@ -18,8 +18,6 @@ export const sequelize = new Sequelize({
   },
   ssl: true,
 });
-}
-
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
   acronym: { type: Sequelize.STRING, allowNull: false },
