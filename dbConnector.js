@@ -1,23 +1,35 @@
 import Sequelize from "sequelize";
 import he from "he";
 
-export const sequelize = new Sequelize({
-  database: process.env.DB_NAME,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: 5432,
-  dialect: "postgres",
-  dialectOptions: {
-    ssl: {
-      require: true,
-      // Ref.: https://github.com/brianc/node-postgres/issues/2009
-      rejectUnauthorized: false,
+export let sequelize;
+
+if (process.env.NODE_ENV === 'production') {
+  // production enviroment Heroku (Postgres DB)
+  sequelize = new Sequelize({
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: 5432,
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        // Ref.: https://github.com/brianc/node-postgres/issues/2009
+        rejectUnauthorized: false,
+      },
+      keepAlive: true,
     },
-    keepAlive: true,
-  },
-  ssl: true,
-});
+    ssl: true,
+  });
+} else {
+  // local development use sqlite
+  sequelize = new Sequelize("acronyms", {
+    dialect: 'sqlite',
+    storage: 'acronyms.sqlite'
+  });
+}
+
 // Define the Model
 export const Acronym = sequelize.define("acronym", {
   acronym: { type: Sequelize.STRING, allowNull: false },
