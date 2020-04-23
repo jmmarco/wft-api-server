@@ -1,7 +1,6 @@
-import { Acronym, sequelize } from "./dbConnector";
+import { sequelize, Acronym } from "./dbConnector";
 import { Op } from "sequelize";
 import { handleSequelizeError, capitalizeFirstLetter } from "./utils";
-
 
 export function welcome(req, res) {
   const help = `
@@ -106,13 +105,18 @@ export function findSingle(req, res) {
 
 export function findRandom(req, res) {
   const { count } = req.params;
-
+  
   Acronym.findAll({
     limit: count,
     order: sequelize.random(),
-  }).then((acronyms) => {
-    res.json(acronyms);
   })
+    .then((acronyms) => {
+      res.json(acronyms);
+    })
+    .catch((err) => {
+      const errorMessage = handleSequelizeError(err);
+      res.status(403).send(errorMessage);
+    });
 }
 
 export function addSingle(req, res) {
@@ -137,38 +141,38 @@ export function addSingle(req, res) {
     });
 }
 
-export function modifySingle (req, res) {
-const { acronym, definition } = req.body;
-if (!acronym) {
-  res
-    .status(403)
-    .send("You must supply a valid (existing) acronym to update");
-  next();
-} else if (!definition || definition.length < 1) {
-  res.status(403).send("Definition must be at least two charcters long");
-  next();
-}
-
-Acronym.update(
-  { definition: capitalizeFirstLetter(definition) },
-  {
-    where: {
-      acronym: {
-        [Op.eq]: acronym.toUpperCase() || capitalizeFirstLetter(acronym),
-      },
-    },
+export function modifySingle(req, res) {
+  const { acronym, definition } = req.body;
+  if (!acronym) {
+    res
+      .status(403)
+      .send("You must supply a valid (existing) acronym to update");
+    next();
+  } else if (!definition || definition.length < 1) {
+    res.status(403).send("Definition must be at least two charcters long");
+    next();
   }
-)
-  .then((affectedRows) => {
-    res.status(200).send(`Successfully updated ${affectedRows}.`);
-  })
-  .catch((err) => {
-    const errorMessage = handleSequelizeError(err);
-    res.status(403).send(errorMessage);
-  });
+
+  Acronym.update(
+    { definition: capitalizeFirstLetter(definition) },
+    {
+      where: {
+        acronym: {
+          [Op.eq]: acronym.toUpperCase() || capitalizeFirstLetter(acronym),
+        },
+      },
+    }
+  )
+    .then((affectedRows) => {
+      res.status(200).send(`Successfully updated ${affectedRows}.`);
+    })
+    .catch((err) => {
+      const errorMessage = handleSequelizeError(err);
+      res.status(403).send(errorMessage);
+    });
 }
 
-export function deleteSingle (req, res) {
+export function deleteSingle(req, res) {
   const { acronym } = req.body;
 
   if (!acronym) {
