@@ -50,18 +50,26 @@ export function findMultiple(req, res) {
     limit: parseInt(limit),
     offset: parseInt(from),
   }).then((results) => {
-    const pageCount = Math.ceil(results.count / parseInt(limit));
-    const next = results.rows.length !== 1 ? "True" : "False";
+    
+    const moreResults = results.rows.length <= 1 ? "False" : "True";
+    
+    let nextUrl;
+    if (moreResults === 'False') {
+      nextUrl = 'None'
+    } else {
+      nextUrl = `${req.protocol}://${req.get('host')}/acronym?from=${parseInt(from) + 1}&limit=${limit}&search=${search}`
+    }
 
     // Set response headers 'next' to indicate if there are more results
     res.set({
-      next: next,
+      moreResults: moreResults,
     });
 
     // Also set it in the response object
     res.json({
       ...results,
-      next,
+      moreResults,
+      nextUrl: nextUrl
     });
   });
 }
