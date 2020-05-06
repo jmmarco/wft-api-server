@@ -11,6 +11,10 @@ If that's all good, then install all necessary dependencies inside the target fo
 ```
 npm install
 ```
+Then run the development server:
+```
+npm run dev
+```
 
 ## Available enpoints
 - **`GET /acronym?from=50&limit=10&search=:search`**
@@ -29,8 +33,9 @@ fetch(url, { headers: { 'Authorization': 'whatever-you-want' }})
 ## Built with
 - [Express](https://expressjs.com/)
 - [Sequelize](https://sequelize.org/)
-- [Sqlite](https://sqlite.org/)
+- [Sqlite](https://sqlite.org/) (development enviroment)
 - [Babel](https://babeljs.io/)
+- [PostgresSQL](https://www.postgresql.org/) (production enviroment)
 
 ## Author
  - Juan Marco
