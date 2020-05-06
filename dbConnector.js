@@ -4,7 +4,7 @@ import he from "he";
 export let sequelize; 
 
 if (process.env.NODE_ENV === 'production') {
-  // production enviroment Heroku (Postgres DB)
+  // production enviroment adapted for Heroku (Postgres DB)
   sequelize = new Sequelize({
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
