@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import he from "he";
 
-export let sequelize;
+export let sequelize; 
 
 if (process.env.NODE_ENV === 'production') {
   // production enviroment Heroku (Postgres DB)
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 } else {
   // local development use sqlite
-  sequelize = new Sequelize("acronyms", {
+  sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: 'acronyms.sqlite'
   });
