@@ -15,6 +15,7 @@ Then run the development server:
 ```
 npm run dev
 ```
+developement server runs on port `8080`
 
 ## Available enpoints
 - **`GET /acronym?from=50&limit=10&search=:search`**
